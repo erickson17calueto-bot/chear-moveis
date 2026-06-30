@@ -2788,13 +2788,13 @@ img {
     }
 }
 
-/* Efeito de halo luminoso dourado sutil que segue o cursor */
-.main-footer {
+/* Efeito de halo luminoso dourado sutil que segue o cursor em áreas escuras */
+.glow-aura-section {
     position: relative;
     overflow: hidden;
 }
 
-.main-footer::before {
+.glow-aura-section::before {
     content: '';
     position: absolute;
     top: 0;
@@ -2808,12 +2808,15 @@ img {
     opacity: 0;
 }
 
-.main-footer:hover::before {
+.glow-aura-section:hover::before {
     opacity: 1;
 }
 
-/* Garante que o conteúdo do rodapé fique por cima do halo de luz */
-.main-footer .container {
+/* Garante que o conteúdo das seções fique por cima do halo de luz */
+.glow-aura-section .container,
+.glow-aura-section .portfolio-slider-wrapper,
+.glow-aura-section .marquee-heading,
+.glow-aura-section .marquee-wrapper {
     position: relative;
     z-index: 2;
 }

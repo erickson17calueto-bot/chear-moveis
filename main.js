@@ -801,15 +801,15 @@ Aguardo contato para darmos início ao projeto 3D!`;
         }
     }
 
-    /* --- 8. MICRO-INTERAÇÃO AURA DOURADA NO RODAPÉ --- */
-    const footer = document.querySelector('.main-footer');
-    if (footer) {
-        footer.addEventListener('mousemove', (e) => {
-            const rect = footer.getBoundingClientRect();
+    /* --- 8. MICRO-INTERAÇÃO AURA DOURADA NAS SEÇÕES ESCURAS --- */
+    const glowSections = document.querySelectorAll('.glow-aura-section');
+    glowSections.forEach(section => {
+        section.addEventListener('mousemove', (e) => {
+            const rect = section.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            footer.style.setProperty('--mouse-x', `${x}px`);
-            footer.style.setProperty('--mouse-y', `${y}px`);
+            section.style.setProperty('--mouse-x', `${x}px`);
+            section.style.setProperty('--mouse-y', `${y}px`);
         });
-    }
+    });
 });
