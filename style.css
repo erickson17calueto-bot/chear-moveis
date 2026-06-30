@@ -3307,3 +3307,212 @@ img {
         gap: 2rem !important;
     }
 }
+
+/* ============================================================
+   CHEAR MÓVEIS PLANEJADOS — MOBILE FIX
+   Correcções de enquadramento do Simulador 2D e demais
+   secções em dispositivos móveis (≤ 768px / ≤ 480px).
+
+   CAUSAS DO OVERFLOW ORIGINAL:
+   1. @media (max-width:1024px) aplica padding:2rem ao
+      .simulator-container — que persistia no mobile.
+   2. grid-template-columns:1fr tem min-size "auto" por omissão;
+      o conteúdo dos option-btn forçava o track a crescer além
+      do viewport → overflow horizontal silencioso.
+   ============================================================ */
+
+/* ----------------------------------------------------------------
+   0. PREVENÇÃO GLOBAL
+   ---------------------------------------------------------------- */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+
+/* ================================================================
+   MOBILE — ≤ 768px
+   ================================================================ */
+@media (max-width: 768px) {
+
+    /* ---- SIMULADOR 2D ---- */
+
+    /* 1. Remove padding herdado do bloco 1024px;
+          usa minmax(0,1fr) para que o track possa comprimir
+          abaixo do min-content dos filhos sem forçar overflow. */
+    .simulator-container {
+        grid-template-columns: minmax(0, 1fr) !important;
+        padding: 0 !important;
+        gap: 1.25rem !important;
+        overflow: hidden !important;
+    }
+
+    /* 2. Grid items: min-width:0 é o fix clássico que impede
+          qualquer filho de inflar o track para além da faixa. */
+    .simulator-visualizer,
+    .simulator-controls {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        padding: 1rem !important;
+        align-items: stretch !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Wrapper e SVG: escalam para 100 % do espaço disponível */
+    .visualizer-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .customizer-svg {
+        width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+
+    /* 4. Abas de ambiente: empilhar em coluna (evita overflow
+          horizontal; ficam mais legíveis em mobile) */
+    .simulator-tabs {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.4rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .sim-tab-btn {
+        width: 100% !important;
+        text-align: center !important;
+        font-size: 0.72rem !important;
+        padding: 0.6rem 0.75rem !important;
+        letter-spacing: 1.5px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        border-radius: 4px !important;
+    }
+
+    /* 5. Option grid: 2 colunas para que o texto dos botões
+          de material não transborde (3 colunas é demasiado
+          estreito para texto como "Carvalho Natural") */
+    .option-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.5rem !important;
+    }
+
+    .option-btn {
+        padding: 0.75rem 0.25rem !important;
+        min-width: 0 !important;
+    }
+
+    .option-btn span {
+        font-size: 0.58rem !important;
+        line-height: 1.3 !important;
+        word-break: break-word !important;
+        -webkit-hyphens: auto !important;
+        hyphens: auto !important;
+        display: block !important;
+        text-align: center !important;
+    }
+
+    /* 6. Painel de controles — tipografia e espaçamentos */
+    .controls-title {
+        font-size: 1.1rem !important;
+    }
+
+    .controls-subtitle {
+        font-size: 0.78rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .control-label {
+        font-size: 0.68rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .control-group {
+        margin-bottom: 1rem !important;
+    }
+
+    /* 7. Sumário */
+    .simulator-summary {
+        padding: 1rem !important;
+    }
+
+    .summary-row {
+        flex-direction: column !important;
+        gap: 0.2rem !important;
+        font-size: 0.8rem !important;
+    }
+
+    .summary-desc {
+        font-size: 0.72rem !important;
+    }
+
+    .simulator-summary .btn-full {
+        font-size: 0.72rem !important;
+        padding: 0.85rem 1rem !important;
+        letter-spacing: 1.5px !important;
+        white-space: normal !important;
+        text-align: center !important;
+    }
+
+    /* 8. Header do simulador */
+    .simulator-section .simulator-header {
+        text-align: left !important;
+        margin-bottom: 2rem !important;
+    }
+
+    .simulator-subtitle {
+        font-size: 0.85rem !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* 9. Container de conteúdo: garantir clip */
+    .simulator-content-container {
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+
+}
+
+
+/* ================================================================
+   ECRÃS MUITO PEQUENOS — ≤ 480px
+   ================================================================ */
+@media (max-width: 480px) {
+
+    .simulator-visualizer,
+    .simulator-controls {
+        padding: 0.75rem !important;
+        border-radius: 8px !important;
+    }
+
+    .sim-tab-btn {
+        font-size: 0.65rem !important;
+        padding: 0.5rem 0.5rem !important;
+        letter-spacing: 1px !important;
+    }
+
+    .option-btn {
+        padding: 0.6rem 0.2rem !important;
+    }
+
+    .option-btn span {
+        font-size: 0.55rem !important;
+    }
+
+    .controls-title {
+        font-size: 1rem !important;
+    }
+
+    .controls-subtitle {
+        font-size: 0.72rem !important;
+    }
+
+}
