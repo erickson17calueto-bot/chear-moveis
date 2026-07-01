@@ -1,0 +1,114 @@
+# ============================================================
+#  CHEAR MÓVEIS PLANEJADOS — Configuração de Segurança Netlify
+#  Blindagem máxima para site estático sem login
+# ============================================================
+
+[build]
+  publish = "."
+
+# ─── HEADERS GLOBAIS DE SEGURANÇA ───────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+
+    # 1. HTTPS obrigatório durante 2 anos (HSTS)
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+
+    # 2. Bloqueia carregamento do site em iframes (anti-clickjacking)
+    X-Frame-Options = "DENY"
+
+    # 3. Bloqueia detecção automática de tipo de conteúdo (anti-sniffing)
+    X-Content-Type-Options = "nosniff"
+
+    # 4. Política de referência — não vaza URL de origem
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # 5. Desactiva funcionalidades desnecessárias do browser
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=(), magnetometer=(), gyroscope=(), accelerometer=()"
+
+    # 6. Protecção XSS legacy (browsers antigos)
+    X-XSS-Protection = "1; mode=block"
+
+    # 7. Controlo de cache — impede cache de conteúdo sensível
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+    # 8. CONTENT SECURITY POLICY — a linha de defesa principal
+    # Controla exactamente de onde podem vir scripts, estilos, fontes, etc.
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com data:;
+      img-src 'self' data: blob: https:;
+      media-src 'self' blob:;
+      connect-src 'self' https://wa.me https://api.whatsapp.com;
+      frame-src 'none';
+      frame-ancestors 'none';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self' https://wa.me https://api.whatsapp.com;
+      upgrade-insecure-requests;
+    """
+
+# ─── HEADERS ESPECÍFICOS PARA ASSETS ────────────────────────
+
+# CSS e JS — cache longa (são ficheiros versionados)
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
+# Imagens — cache 30 dias
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+# Vídeos — cache 7 dias
+[[headers]]
+  for = "/*.mp4"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# ─── REDIRECTS DE SEGURANÇA ─────────────────────────────────
+
+# Força HTTPS (redundante com HSTS mas defensivo)
+[[redirects]]
+  from = "http://chear.com/*"
+  to   = "https://chear.com/:splat"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from = "http://www.chear.com/*"
+  to   = "https://chear.com/:splat"
+  status = 301
+  force  = true
+
+# Bloqueia acesso directo a ficheiros de configuração
+[[redirects]]
+  from = "/.env"
+  to   = "/404"
+  status = 404
+
+[[redirects]]
+  from = "/netlify.toml"
+  to   = "/404"
+  status = 404
+
+[[redirects]]
+  from = "/package.json"
+  to   = "/404"
+  status = 404
+
+[[redirects]]
+  from = "/package-lock.json"
+  to   = "/404"
+  status = 404

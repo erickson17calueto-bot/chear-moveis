@@ -1,0 +1,13 @@
+{
+  "name": "chear-moveis-planejados",
+  "version": "1.0.0",
+  "description": "CHEAR Móveis Planejados — Site Oficial",
+  "private": true,
+  "scripts": {
+    "obfuscar": "node obfuscar.js",
+    "build": "node obfuscar.js"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.2.2"
+  }
+}
