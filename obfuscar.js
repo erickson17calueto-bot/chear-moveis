@@ -55,15 +55,15 @@ const obfuscated = JavaScriptObfuscator.obfuscate(sourceCode, {
   splitStrings: true,
   splitStringsChunkLength: 8,
 
-  // Protecção anti-debug (abre infinito de debugger no DevTools)
-  debugProtection: true,
+  // Protecção anti-debug (desactivada para evitar travamentos locais/Git)
+  debugProtection: false,
   debugProtectionInterval: 4000,
 
   // Desactiva console.log (remove logs de debug)
   disableConsoleOutput: true,
 
-  // Auto-defesa: se o código for formatado/alterado, para de funcionar
-  selfDefending: true,
+  // Auto-defesa: desactivada para evitar corrupção por quebra de linha do Git
+  selfDefending: false,
 
   // Transformações adicionais
   transformObjectKeys: true,
