@@ -1,0 +1,8 @@
+# Forçar finais de linha LF para consistência entre Windows/Linux e evitar travamento em scripts sensíveis
+* text eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mp4 binary
