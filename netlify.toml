@@ -92,6 +92,27 @@
   status = 301
   force  = true
 
+# ─── ROTAS AMIGÁVEIS PORTAL CORPORATIVO (SITE MÃE) ───────────
+[[redirects]]
+  from = "/portal"
+  to   = "/site mae/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/grupo"
+  to   = "/site mae/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/investiment"
+  to   = "/site mae/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/site-mae"
+  to   = "/site mae/index.html"
+  status = 200
+
 # Bloqueia acesso directo a ficheiros de configuração
 [[redirects]]
   from = "/.env"
