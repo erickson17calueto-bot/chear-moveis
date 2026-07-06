@@ -728,7 +728,7 @@ img {
 /* Cabeçalho Flutuante Absoluto */
 .portfolio-header.absolute-header {
     position: absolute;
-    top: 90px; /* Alinhado verticalmente abaixo da navbar fixada */
+    top: 50px; /* Subido de 90px para 50px para evitar sobreposição */
     left: 8%;
     z-index: 100;
     max-width: 600px;
@@ -748,7 +748,7 @@ img {
 
 .portfolio-header.absolute-header .section-title {
     font-family: var(--font-headings);
-    font-size: 3rem;
+    font-size: 2.6rem; /* Reduzido de 3rem para 2.6rem para evitar sobreposição */
     font-weight: 700;
     line-height: 1.15;
     margin-bottom: 0.8rem;
@@ -758,7 +758,7 @@ img {
 
 .portfolio-header.absolute-header .portfolio-subtitle {
     font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 0.9rem; /* Reduzido de 0.95rem para 0.9rem */
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.85);
     max-width: 500px;
@@ -914,7 +914,7 @@ img {
 .slide-item:nth-child(2) .slide-content {
     display: block;
     top: auto;
-    bottom: 140px; /* Posicionado acima dos controles */
+    bottom: 100px; /* Posicionado acima dos controles */
     left: 8%;
     transform: none;
     animation: revealSlideContentCustom 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
@@ -947,20 +947,20 @@ img {
 
 .slide-item:nth-child(2) .slide-title {
     font-family: var(--font-headings);
-    font-size: 4.2rem; /* Aumentado de 3.8rem para 4.2rem para mais impacto */
+    font-size: 3.2rem; /* Reduzido de 4.2rem para 3.2rem para evitar sobreposição */
     font-weight: 700;
     line-height: 1.25;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
     color: #fff;
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 .slide-item:nth-child(2) .slide-desc {
-    font-size: 1rem; /* Aumentado de 0.95rem para 1rem */
+    font-size: 0.95rem; /* Reduzido de 1rem para 0.95rem */
     line-height: 1.6;
     color: #dedede;
-    margin-bottom: 2.5rem;
-    max-width: 480px; /* Aumentado de 440px para 480px */
+    margin-bottom: 1.5rem; /* Reduzido de 2.5rem para 1.5rem */
+    max-width: 480px;
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
@@ -997,7 +997,7 @@ img {
 /* Controles de navegação */
 .slider-controls {
     position: absolute;
-    bottom: 60px; /* Subido mais um pouco para equilibrar com o contêiner de 720px */
+    bottom: 35px; /* Ajustado de 60px para 35px para evitar sobreposição */
     left: 8%;
     display: flex;
     align-items: center;
@@ -1081,8 +1081,16 @@ img {
         border-radius: 24px;
     }
 
+    .portfolio-header.absolute-header {
+        top: 45px;
+    }
+
+    .portfolio-header.absolute-header .section-title {
+        font-size: 2.4rem;
+    }
+
     .slide-item:nth-child(2) .slide-title {
-        font-size: 3.8rem;
+        font-size: 2.8rem; /* Reduzido de 3.8rem para evitar colisão */
     }
 
     .slide-item:nth-child(3) { left: 48%; }
@@ -1102,8 +1110,24 @@ img {
         border-radius: 20px;
     }
 
+    .portfolio-header.absolute-header {
+        top: 40px;
+    }
+
+    .portfolio-header.absolute-header .section-title {
+        font-size: 2.2rem;
+    }
+
     .slide-item:nth-child(2) .slide-title {
-        font-size: 3.2rem;
+        font-size: 2.4rem; /* Reduzido de 3.2rem para evitar colisão */
+    }
+
+    .slide-item:nth-child(2) .slide-content {
+        bottom: 90px;
+    }
+
+    .slider-controls {
+        bottom: 30px;
     }
 
     .slide-item:nth-child(3) { left: 52%; }
@@ -1120,12 +1144,16 @@ img {
     }
 
     .portfolio-header.absolute-header {
-        position: relative !important;
-        top: 0 !important;
-        left: 0 !important;
-        max-width: 100% !important;
-        padding: 0 8% 2.5rem !important;
-        z-index: 10 !important;
+        position: absolute !important;
+        top: 35px !important;
+        left: 8% !important;
+        max-width: 600px !important;
+        padding: 0 !important;
+        z-index: 100 !important;
+    }
+
+    .portfolio-header.absolute-header .section-title {
+        font-size: 2.0rem;
     }
 
     .portfolio-slider-wrapper {
@@ -1141,9 +1169,19 @@ img {
         width: 400px;
     }
 
+    .slide-item:nth-child(2) .slide-content {
+        bottom: 85px !important;
+        left: 8% !important;
+    }
+
     .slide-item:nth-child(2) .slide-title {
-        font-size: 2.8rem;
+        font-size: 2.2rem; /* Reduzido de 2.8rem */
         line-height: 1.2 !important;
+    }
+
+    .slider-controls {
+        bottom: 25px !important;
+        left: 8% !important;
     }
 
     .slide-item:nth-child(3) { left: 55%; }
@@ -1157,15 +1195,38 @@ img {
         height: 480px;
     }
     
+    .portfolio-header.absolute-header {
+        position: absolute !important;
+        top: 30px !important;
+        left: 5% !important;
+        max-width: 450px !important;
+        padding: 0 !important;
+        z-index: 100 !important;
+    }
+
+    .portfolio-header.absolute-header .section-title {
+        font-size: 1.8rem;
+    }
+
     .slide-content {
         left: 5%;
         width: 340px;
     }
     
+    .slide-item:nth-child(2) .slide-content {
+        bottom: 80px !important;
+        left: 5% !important;
+    }
+
     .slide-item:nth-child(2) .slide-title {
-        font-size: 2.4rem;
+        font-size: 2.0rem; /* Reduzido de 2.4rem */
     }
     
+    .slider-controls {
+        left: 5% !important;
+        bottom: 20px !important;
+    }
+
     .slide-item:nth-child(3) { left: 60%; }
     .slide-item:nth-child(4) { left: calc(60% + 180px); }
     .slide-item:nth-child(5) { left: calc(60% + 360px); opacity: 0; }
@@ -1173,11 +1234,6 @@ img {
     .slide-item:nth-child(n+3) {
         width: 160px;
         height: 240px;
-    }
-    
-    .slider-controls {
-        left: 5%;
-        bottom: 40px;
     }
 }
 
