@@ -949,7 +949,8 @@ img {
     font-family: var(--font-headings);
     font-size: 3.2rem; /* Reduzido de 4.2rem para 3.2rem para evitar sobreposição */
     font-weight: 700;
-    line-height: 1.25;
+    line-height: 1.4; /* Aumentado para 1.4 para evitar letras sobrepostas */
+    letter-spacing: normal;
     margin-bottom: 1.25rem;
     color: #fff;
     text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -3135,7 +3136,8 @@ img {
 
     .slide-item:nth-child(2) .slide-title {
         font-size: 1.7rem !important;
-        line-height: 1.2 !important;
+        line-height: 1.4 !important; /* Aumentado para evitar letras sobrepostas no mobile */
+        letter-spacing: normal !important;
         margin-bottom: 0.75rem !important;
     }
 
