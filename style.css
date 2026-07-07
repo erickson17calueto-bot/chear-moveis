@@ -780,13 +780,13 @@ img {
 }
 
 .slide-item {
-    width: 360px; /* Largura do card aumentada de 300px para 360px */
-    height: 520px; /* Altura do card aumentada de 440px para 520px */
+    width: 260px; /* Largura do card reduzida para um estilo stack elegante */
+    height: 380px; /* Altura do card reduzida */
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    border-radius: 28px; /* Cantos arredondados aumentados para 28px */
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+    border-radius: 20px; /* Cantos arredondados ajustados */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
     background-position: center;
     background-size: cover;
     display: inline-block;
@@ -853,33 +853,41 @@ img {
     z-index: 2;
 }
 
-/* Item 3 é o primeiro card flutuante à direita (Trazido ainda mais para o centro: 45% em vez de 50%) */
+/* Item 3 é o primeiro card da stack flutuante à direita */
 .slide-item:nth-child(3) {
-    left: 45%;
+    left: 65%;
+    transform: translateY(-50%);
     z-index: 10;
 }
 
-/* Item 4 é o segundo card flutuante (largura 360px + 40px de espaçamento) */
+/* Item 4 é o segundo card da stack (atrás e reduzido) */
 .slide-item:nth-child(4) {
-    left: calc(45% + 400px);
+    left: calc(65% + 40px);
+    transform: translateY(-50%) scale(0.9);
     z-index: 9;
+    opacity: 0.8;
 }
 
-/* Item 5 é o terceiro card flutuante */
+/* Item 5 é o terceiro card da stack */
 .slide-item:nth-child(5) {
-    left: calc(45% + 800px);
+    left: calc(65% + 80px);
+    transform: translateY(-50%) scale(0.8);
     z-index: 8;
+    opacity: 0.5;
 }
 
-/* Item 6 é o quarto card flutuante */
+/* Item 6 é o quarto card da stack */
 .slide-item:nth-child(6) {
-    left: calc(45% + 1200px);
+    left: calc(65% + 120px);
+    transform: translateY(-50%) scale(0.7);
     z-index: 7;
+    opacity: 0.2;
 }
 
 /* Itens excedentes ficam ocultos na direita */
 .slide-item:nth-child(n+7) {
-    left: calc(45% + 1600px);
+    left: calc(65% + 160px);
+    transform: translateY(-50%) scale(0.6);
     opacity: 0;
     z-index: 6;
 }
@@ -982,11 +990,16 @@ img {
 
 .slide-item:nth-child(n+3) .slide-title {
     font-family: var(--font-headings);
-    font-size: 1.25rem; /* Ligeiramente maior para acompanhar o card maior */
+    font-size: 1.15rem; /* Ajustado para o card menor */
     font-weight: 500;
     color: #fff;
     margin-bottom: 0;
     line-height: 1.2;
+}
+
+/* Oculta textos nos cards que estao por tras na stack */
+.slide-item:nth-child(n+4) .slide-content {
+    opacity: 0 !important;
 }
 
 /* Ocultar descrições e ações no modo card */
