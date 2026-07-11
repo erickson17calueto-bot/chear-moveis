@@ -1,208 +1,242 @@
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // ==========================================================================
-    // 1. MENU MOBILE (HAMBURGUER)
-    // ==========================================================================
-    const menuToggle = document.getElementById('menu-toggle');
-    const navMenu = document.getElementById('nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
+/* ============================================================
+   SHARE INVESTMENT — Portal Corporativo
+   Interações: menu, header, reveal, contadores, rede do hero
+   ============================================================ */
+(function () {
+    'use strict';
 
-    if (menuToggle && navMenu) {
-        menuToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            menuToggle.classList.toggle('open');
-            
-            // Animação do hamburguer
-            const bars = menuToggle.querySelectorAll('.bar');
-            if (menuToggle.classList.contains('open')) {
-                bars[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
-                bars[1].style.opacity = '0';
-                bars[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
-            } else {
-                bars[0].style.transform = 'none';
-                bars[1].style.opacity = '1';
-                bars[2].style.transform = 'none';
-            }
-        });
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Fechar menu ao clicar em qualquer link
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                menuToggle.classList.remove('open');
-                const bars = menuToggle.querySelectorAll('.bar');
-                bars[0].style.transform = 'none';
-                bars[1].style.opacity = '1';
-                bars[2].style.transform = 'none';
+    /* ---------- Header: fundo sólido ao rolar ---------- */
+    var header = document.getElementById('main-header');
+
+    function onScrollHeader() {
+        header.classList.toggle('scrolled', window.scrollY > 40);
+    }
+    window.addEventListener('scroll', onScrollHeader, { passive: true });
+    onScrollHeader();
+
+    /* ---------- Menu mobile ---------- */
+    var menuToggle = document.getElementById('menu-toggle');
+    var navMenu = document.getElementById('nav-menu');
+
+    function closeMenu() {
+        menuToggle.classList.remove('open');
+        navMenu.classList.remove('active');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        menuToggle.setAttribute('aria-label', 'Abrir menu');
+        document.body.style.overflow = '';
+    }
+
+    menuToggle.addEventListener('click', function () {
+        var isOpen = navMenu.classList.toggle('active');
+        menuToggle.classList.toggle('open', isOpen);
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
+        menuToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    navMenu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && navMenu.classList.contains('active')) closeMenu();
+    });
+
+    /* ---------- Revelação ao rolar (com stagger por secção) ---------- */
+    var revealEls = document.querySelectorAll('.reveal');
+
+    if ('IntersectionObserver' in window && !reducedMotion) {
+        // Atraso incremental entre elementos irmãos da mesma secção
+        var sections = document.querySelectorAll('section, footer');
+        sections.forEach(function (section) {
+            section.querySelectorAll('.reveal').forEach(function (el, i) {
+                el.style.setProperty('--reveal-delay', Math.min(i * 90, 450) + 'ms');
             });
         });
-    }
 
-    // ==========================================================================
-    // 2. HEADER EFEITO SCROLL
-    // ==========================================================================
-    const header = document.querySelector('.main-header');
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-        
-        // Atualizar link ativo na navegação
-        updateActiveNavLink();
-    });
-
-    function updateActiveNavLink() {
-        const scrollPosition = window.scrollY + 120;
-        const sections = document.querySelectorAll('section');
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
-            const sectionId = section.getAttribute('id');
-            
-            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${sectionId}`) {
-                        link.classList.add('active');
-                    }
-                });
-            }
-        });
-    }
-
-    // ==========================================================================
-    // 3. REVEAL ON SCROLL (INTERSECTION OBSERVER)
-    // ==========================================================================
-    const revealElements = document.querySelectorAll('.scroll-reveal');
-    
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-                observer.unobserve(entry.target); // Revelar apenas uma vez
-            }
-        });
-    }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px'
-    });
-
-    revealElements.forEach(element => {
-        revealObserver.observe(element);
-    });
-
-    // ==========================================================================
-    // 4. INTERACTIVE ECOSYSTEM HUB (CARDS REDIRECIONANDO SUAVEMENTE)
-    // ==========================================================================
-    const divisionCards = document.querySelectorAll('.division-card');
-    
-    divisionCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const targetId = card.getAttribute('data-target');
-            const targetSection = document.getElementById(targetId);
-            
-            if (targetSection) {
-                window.scrollTo({
-                    top: targetSection.offsetTop - 90,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-
-    // ==========================================================================
-    // 5. INTERATIVIDADE DO FORMULÁRIO INTELIGENTE
-    // ==========================================================================
-    const contactForm = document.getElementById('group-contact-form');
-    const sectorSelect = document.getElementById('form-sector');
-    const actionButtons = document.querySelectorAll('[data-division]');
-
-    // Mudar a estética do formulário conforme a divisão selecionada
-    if (sectorSelect && contactForm) {
-        sectorSelect.addEventListener('change', (e) => {
-            const value = e.target.value;
-            
-            // Remover classes de foco anteriores
-            contactForm.classList.remove('focus-consulting', 'focus-logistics');
-            
-            // Adicionar classe correspondente
-            if (value === 'consultoria') {
-                contactForm.classList.add('focus-consulting');
-            } else if (value === 'logistica') {
-                contactForm.classList.add('focus-logistics');
-            }
-        });
-    }
-
-    // Ações dos botões "Agendar/Orçar" que levam ao formulário com pré-seleção
-    actionButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const division = btn.getAttribute('data-division');
-            
-            if (sectorSelect) {
-                if (division === 'consulting') {
-                    sectorSelect.value = 'consultoria';
-                } else if (division === 'logistics') {
-                    sectorSelect.value = 'logistica';
-                } else if (division === 'furniture') {
-                    sectorSelect.value = 'moveis';
+        var revealObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObserver.unobserve(entry.target);
                 }
-                
-                // Disparar evento de mudança para aplicar o estilo
-                sectorSelect.dispatchEvent(new Event('change'));
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+        revealEls.forEach(function (el) { revealObserver.observe(el); });
+    } else {
+        revealEls.forEach(function (el) { el.classList.add('visible'); });
+    }
+
+    /* ---------- Contadores animados (estatísticas) ---------- */
+    function formatCount(value, pad) {
+        var text = String(value);
+        while (pad && text.length < pad) text = '0' + text;
+        return text;
+    }
+
+    function animateCount(el) {
+        var target = parseInt(el.getAttribute('data-count'), 10);
+        var pad = parseInt(el.getAttribute('data-pad') || '0', 10);
+        if (reducedMotion) {
+            el.textContent = formatCount(target, pad);
+            return;
+        }
+        var duration = 1600;
+        var start = null;
+
+        function step(timestamp) {
+            if (!start) start = timestamp;
+            var progress = Math.min((timestamp - start) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3); // ease-out cúbico
+            el.textContent = formatCount(Math.round(target * eased), pad);
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    var statsGrid = document.getElementById('stats-grid');
+    if (statsGrid && 'IntersectionObserver' in window) {
+        var statsObserver = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) {
+                statsGrid.querySelectorAll('.count').forEach(animateCount);
+                statsObserver.disconnect();
             }
-        });
+        }, { threshold: 0.3 });
+        statsObserver.observe(statsGrid);
+    } else if (statsGrid) {
+        statsGrid.querySelectorAll('.count').forEach(animateCount);
+    }
+
+    /* ---------- Link ativo na navegação ---------- */
+    var navLinks = document.querySelectorAll('.nav-link');
+    var trackedSections = [];
+
+    navLinks.forEach(function (link) {
+        var id = link.getAttribute('href');
+        if (id && id.charAt(0) === '#') {
+            var section = document.querySelector(id);
+            if (section) trackedSections.push({ el: section, link: link });
+        }
     });
 
-    // Envio do formulário
-    if (contactForm) {
-        const feedbackEl = document.getElementById('form-feedback');
-        const submitBtn = document.getElementById('btn-submit');
+    if ('IntersectionObserver' in window && trackedSections.length) {
+        var activeObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(function (l) { l.classList.remove('active'); });
+                    trackedSections.forEach(function (t) {
+                        if (t.el === entry.target) t.link.classList.add('active');
+                    });
+                }
+            });
+        }, { rootMargin: '-40% 0px -55% 0px' });
 
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Estado de envio
-            submitBtn.textContent = 'Enviando...';
-            submitBtn.disabled = true;
-
-            const name = document.getElementById('form-name').value;
-            const email = document.getElementById('form-email').value;
-            const phone = document.getElementById('form-phone').value;
-            const sector = sectorSelect.value;
-            const message = document.getElementById('form-message').value;
-
-            // Simular chamada de API com timeout
-            setTimeout(() => {
-                submitBtn.textContent = 'Enviar Mensagem';
-                submitBtn.disabled = false;
-
-                // Sucesso
-                feedbackEl.classList.remove('hidden', 'error');
-                feedbackEl.classList.add('success');
-                
-                let sectorName = '';
-                if (sector === 'consultoria') sectorName = 'Chear Consultoria';
-                else if (sector === 'logistica') sectorName = 'Chear Logística';
-                else if (sector === 'moveis') sectorName = 'Chear Móveis Planejados';
-                else sectorName = 'Chear Geral';
-
-                feedbackEl.innerHTML = `<strong>Obrigado, ${name}!</strong> Sua mensagem foi direcionada com sucesso para o departamento <strong>${sectorName}</strong>. Entraremos em contato em breve.`;
-                
-                // Limpar campos
-                contactForm.reset();
-                contactForm.classList.remove('focus-consulting', 'focus-logistics');
-
-                // Esconder feedback depois de 8 segundos
-                setTimeout(() => {
-                    feedbackEl.classList.add('hidden');
-                }, 8000);
-
-            }, 1500);
-        });
+        trackedSections.forEach(function (t) { activeObserver.observe(t.el); });
     }
-});
+
+    /* ---------- Rede de conexões no hero (canvas) ---------- */
+    var canvas = document.getElementById('hero-network');
+    if (canvas && !reducedMotion) {
+        var ctx = canvas.getContext('2d');
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var nodes = [];
+        var animationId = null;
+        var running = false;
+        var CONNECT_DIST = 150;
+
+        function sizeCanvas() {
+            var rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            return rect;
+        }
+
+        function buildNodes() {
+            var rect = sizeCanvas();
+            var count = Math.max(24, Math.min(70, Math.floor((rect.width * rect.height) / 22000)));
+            nodes = [];
+            for (var i = 0; i < count; i++) {
+                nodes.push({
+                    x: Math.random() * rect.width,
+                    y: Math.random() * rect.height,
+                    vx: (Math.random() - 0.5) * 0.22,
+                    vy: (Math.random() - 0.5) * 0.22,
+                    r: Math.random() * 1.4 + 0.6
+                });
+            }
+        }
+
+        function draw() {
+            var w = canvas.width / dpr;
+            var h = canvas.height / dpr;
+            ctx.clearRect(0, 0, w, h);
+
+            for (var i = 0; i < nodes.length; i++) {
+                var n = nodes[i];
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < -10) n.x = w + 10; else if (n.x > w + 10) n.x = -10;
+                if (n.y < -10) n.y = h + 10; else if (n.y > h + 10) n.y = -10;
+
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(200, 164, 93, 0.55)';
+                ctx.fill();
+            }
+
+            for (var a = 0; a < nodes.length; a++) {
+                for (var b = a + 1; b < nodes.length; b++) {
+                    var dx = nodes[a].x - nodes[b].x;
+                    var dy = nodes[a].y - nodes[b].y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < CONNECT_DIST) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[a].x, nodes[a].y);
+                        ctx.lineTo(nodes[b].x, nodes[b].y);
+                        ctx.strokeStyle = 'rgba(200, 164, 93, ' + (0.14 * (1 - dist / CONNECT_DIST)) + ')';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            animationId = requestAnimationFrame(draw);
+        }
+
+        function startNetwork() {
+            if (!running) {
+                running = true;
+                animationId = requestAnimationFrame(draw);
+            }
+        }
+
+        function stopNetwork() {
+            running = false;
+            if (animationId) cancelAnimationFrame(animationId);
+        }
+
+        buildNodes();
+        startNetwork();
+
+        var resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(buildNodes, 200);
+        });
+
+        // Pausa quando a aba fica oculta ou o hero sai do ecrã
+        document.addEventListener('visibilitychange', function () {
+            document.hidden ? stopNetwork() : startNetwork();
+        });
+
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                entries[0].isIntersecting ? startNetwork() : stopNetwork();
+            }, { threshold: 0 }).observe(canvas);
+        }
+    }
+})();
