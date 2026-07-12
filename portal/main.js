@@ -1,6 +1,6 @@
 /* ============================================================
    SHARE INVESTMENT — Portal Corporativo
-   Interações: menu, header, reveal, contadores, rede do hero
+   Interações: menu, header, reveal, contadores, navegação activa
    ============================================================ */
 (function () {
     'use strict';
@@ -137,106 +137,4 @@
         trackedSections.forEach(function (t) { activeObserver.observe(t.el); });
     }
 
-    /* ---------- Rede de conexões no hero (canvas) ---------- */
-    var canvas = document.getElementById('hero-network');
-    if (canvas && !reducedMotion) {
-        var ctx = canvas.getContext('2d');
-        var dpr = Math.min(window.devicePixelRatio || 1, 2);
-        var nodes = [];
-        var animationId = null;
-        var running = false;
-        var CONNECT_DIST = 150;
-
-        function sizeCanvas() {
-            var rect = canvas.parentElement.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            return rect;
-        }
-
-        function buildNodes() {
-            var rect = sizeCanvas();
-            var count = Math.max(24, Math.min(70, Math.floor((rect.width * rect.height) / 22000)));
-            nodes = [];
-            for (var i = 0; i < count; i++) {
-                nodes.push({
-                    x: Math.random() * rect.width,
-                    y: Math.random() * rect.height,
-                    vx: (Math.random() - 0.5) * 0.22,
-                    vy: (Math.random() - 0.5) * 0.22,
-                    r: Math.random() * 1.4 + 0.6
-                });
-            }
-        }
-
-        function draw() {
-            var w = canvas.width / dpr;
-            var h = canvas.height / dpr;
-            ctx.clearRect(0, 0, w, h);
-
-            for (var i = 0; i < nodes.length; i++) {
-                var n = nodes[i];
-                n.x += n.vx;
-                n.y += n.vy;
-                if (n.x < -10) n.x = w + 10; else if (n.x > w + 10) n.x = -10;
-                if (n.y < -10) n.y = h + 10; else if (n.y > h + 10) n.y = -10;
-
-                ctx.beginPath();
-                ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(200, 164, 93, 0.55)';
-                ctx.fill();
-            }
-
-            for (var a = 0; a < nodes.length; a++) {
-                for (var b = a + 1; b < nodes.length; b++) {
-                    var dx = nodes[a].x - nodes[b].x;
-                    var dy = nodes[a].y - nodes[b].y;
-                    var dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < CONNECT_DIST) {
-                        ctx.beginPath();
-                        ctx.moveTo(nodes[a].x, nodes[a].y);
-                        ctx.lineTo(nodes[b].x, nodes[b].y);
-                        ctx.strokeStyle = 'rgba(200, 164, 93, ' + (0.14 * (1 - dist / CONNECT_DIST)) + ')';
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            animationId = requestAnimationFrame(draw);
-        }
-
-        function startNetwork() {
-            if (!running) {
-                running = true;
-                animationId = requestAnimationFrame(draw);
-            }
-        }
-
-        function stopNetwork() {
-            running = false;
-            if (animationId) cancelAnimationFrame(animationId);
-        }
-
-        buildNodes();
-        startNetwork();
-
-        var resizeTimer;
-        window.addEventListener('resize', function () {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(buildNodes, 200);
-        });
-
-        // Pausa quando a aba fica oculta ou o hero sai do ecrã
-        document.addEventListener('visibilitychange', function () {
-            document.hidden ? stopNetwork() : startNetwork();
-        });
-
-        if ('IntersectionObserver' in window) {
-            new IntersectionObserver(function (entries) {
-                entries[0].isIntersecting ? startNetwork() : stopNetwork();
-            }, { threshold: 0 }).observe(canvas);
-        }
-    }
 })();
