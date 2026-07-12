@@ -304,11 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Abas do simulador
     const tabButtons = document.querySelectorAll('.sim-tab-btn');
     const svgKitchen = document.getElementById('kitchen-svg');
-    const svgCloset = document.getElementById('closet-svg');
+    const svgLivingRoom = document.getElementById('living-room-svg');
     const svgBedroom = document.getElementById('bedroom-svg');
     const svgOffice = document.getElementById('office-svg');
 
-    let activeEnv = 'kitchen'; // kitchen, closet, bedroom, office
+    let activeEnv = 'kitchen'; // kitchen, living-room, bedroom, office
 
     // Estado da simulação por ambiente
     const simState = {
@@ -317,8 +317,9 @@ document.addEventListener('DOMContentLoaded', () => {
             countertop: 'calacatta', // calacatta, nero, quartz
             handles: 'gold'       // gold, black
         },
-        closet: {
+        livingRoom: {
             cabinets: 'oak',
+            countertop: 'calacatta',
             handles: 'gold'
         },
         bedroom: {
@@ -360,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const environmentNames = {
         kitchen: 'Cozinha Gourmet',
-        closet: 'Closet Premium',
+        livingRoom: 'Sala de Estar',
         bedroom: 'Dormitório Casal',
         office: 'Home Office'
     };
@@ -377,13 +378,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Ocultar todos os SVGs
             if (svgKitchen) svgKitchen.style.display = 'none';
-            if (svgCloset) svgCloset.style.display = 'none';
+            if (svgLivingRoom) svgLivingRoom.style.display = 'none';
             if (svgBedroom) svgBedroom.style.display = 'none';
             if (svgOffice) svgOffice.style.display = 'none';
             
             // Mostrar SVG correspondente
             if (env === 'kitchen' && svgKitchen) svgKitchen.style.display = 'block';
-            if (env === 'closet' && svgCloset) svgCloset.style.display = 'block';
+            if (env === 'living-room' && svgLivingRoom) svgLivingRoom.style.display = 'block';
             if (env === 'bedroom' && svgBedroom) svgBedroom.style.display = 'block';
             if (env === 'office' && svgOffice) svgOffice.style.display = 'block';
 
