@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
             countertop: 'calacatta', // calacatta, nero, quartz
             handles: 'gold'       // gold, black
         },
-        livingRoom: {
+        'living-room': {
             cabinets: 'oak',
             countertop: 'calacatta',
             handles: 'gold'
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const environmentNames = {
         kitchen: 'Cozinha Gourmet',
-        livingRoom: 'Sala de Estar',
+        'living-room': 'Sala de Estar',
         bedroom: 'Dormitório Casal',
         office: 'Home Office'
     };
@@ -433,91 +433,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateSVGVisuals(env, target, value) {
         if (target === 'headboard') {
-            const head = document.getElementById('bedroom-headboard');
+            // Especial para o Dormitório Casal
+            const headParts = document.querySelectorAll('.headboard-part');
             const blanket = document.getElementById('bedroom-blanket');
             if (value === 'obsidian') {
-                if (head) head.setAttribute('fill', '#181818');
+                headParts.forEach(p => p.setAttribute('fill', '#181818'));
                 if (blanket) blanket.setAttribute('fill', 'url(#gold-brushed)');
             } else if (value === 'emerald') {
-                if (head) head.setAttribute('fill', '#cfb095');
+                headParts.forEach(p => p.setAttribute('fill', '#cfb095'));
                 if (blanket) blanket.setAttribute('fill', '#2d5a27');
             } else if (value === 'nordic') {
-                if (head) head.setAttribute('fill', '#505052');
+                headParts.forEach(p => p.setAttribute('fill', '#505052'));
                 if (blanket) blanket.setAttribute('fill', '#ffffff');
             }
             return;
         }
 
+        if (!fillPatterns[target] || !fillPatterns[target][value]) return;
         const fill = fillPatterns[target][value];
+        
+        // Pega o SVG ativo
+        let svgId = env === 'kitchen' ? 'kitchen-svg' : env + '-svg';
+        
+        const svgElement = document.getElementById(svgId);
+        if (!svgElement) return;
 
-        if (env === 'kitchen') {
-            if (target === 'cabinets') {
-                const top = document.getElementById('cabinets-top');
-                const bottom = document.getElementById('cabinets-bottom');
-                if (top) {
-                    top.setAttribute('fill', fill);
-                    top.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-                if (bottom) {
-                    bottom.setAttribute('fill', fill);
-                    bottom.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-            } else if (target === 'countertop') {
-                const counter = document.querySelector('#countertop rect');
-                if (counter) counter.setAttribute('fill', fill);
-            } else if (target === 'handles') {
-                const hand = document.getElementById('handles');
-                if (hand) {
-                    hand.setAttribute('fill', fill);
-                    hand.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-            }
-        } else if (env === 'bedroom') {
-            if (target === 'cabinets') {
-                const bedCabs = document.getElementById('bedroom-cabinets');
-                const nightstand = document.getElementById('bedroom-nightstand');
-                const nightstandDrawer = document.getElementById('bedroom-nightstand-drawer');
-                if (bedCabs) {
-                    bedCabs.setAttribute('fill', fill);
-                    bedCabs.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-                if (nightstand) nightstand.setAttribute('fill', fill);
-                if (nightstandDrawer) nightstandDrawer.setAttribute('fill', fill);
-            } else if (target === 'handles') {
-                const bedHands = document.getElementById('bedroom-handles');
-                const nightstandHand = document.getElementById('bedroom-nightstand-handle');
-                if (bedHands) {
-                    bedHands.setAttribute('fill', fill);
-                    bedHands.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-                if (nightstandHand) nightstandHand.setAttribute('fill', fill);
-            }
-        } else if (env === 'office') {
-            if (target === 'cabinets') {
-                const offCabs = document.getElementById('office-cabinets');
-                const offShelves = document.getElementById('office-shelves');
-                if (offCabs) {
-                    offCabs.setAttribute('fill', fill);
-                    offCabs.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-                if (offShelves) {
-                    offShelves.setAttribute('fill', fill);
-                    offShelves.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-            } else if (target === 'countertop') {
-                const offCounterGroup = document.getElementById('office-countertop');
-                if (offCounterGroup) {
-                    offCounterGroup.setAttribute('fill', fill);
-                    offCounterGroup.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-            } else if (target === 'handles') {
-                const offHands = document.getElementById('office-handles');
-                const offLeg = document.getElementById('office-leg');
-                if (offHands) {
-                    offHands.setAttribute('fill', fill);
-                    offHands.querySelectorAll('rect').forEach(r => r.setAttribute('fill', fill));
-                }
-                if (offLeg) offLeg.setAttribute('fill', fill);
+        if (target === 'cabinets') {
+            const parts = svgElement.querySelectorAll('.cabinet-door-part');
+            parts.forEach(p => p.setAttribute('fill', fill));
+        } else if (target === 'handles') {
+            const parts = svgElement.querySelectorAll('.handle-part');
+            parts.forEach(p => p.setAttribute('fill', fill));
+        } else if (target === 'countertop') {
+            // Countertop uses specific IDs like #countertop, #living-room-countertop, #office-countertop
+            const counterId = env === 'kitchen' ? 'countertop' : env + '-countertop';
+            const counter = document.getElementById(counterId);
+            if (counter) {
+                counter.setAttribute('fill', fill);
+                counter.querySelectorAll('rect, path').forEach(r => r.setAttribute('fill', fill));
             }
         }
     }

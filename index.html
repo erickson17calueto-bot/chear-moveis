@@ -641,7 +641,7 @@
                             </g>
                             
                             <!-- Tampo de Pedra do Rack -->
-                            <g id="living-countertop" fill="url(#marble-calacatta)" filter="url(#shadow)">
+                            <g id="living-room-countertop" fill="url(#marble-calacatta)" filter="url(#shadow)">
                                 <rect x="95" y="330" width="610" height="10" rx="2" stroke="#999" stroke-width="0.5"/>
                             </g>
 
@@ -672,14 +672,14 @@
                             
                             <!-- Painel de Cabeceira -->
                             <g id="headboard" fill="url(#wood-oak)" filter="url(#shadow)" stroke="#121212" stroke-width="1.5">
-                                <rect x="150" y="100" width="500" height="250" class="cabinet-door-part" />
-                                <rect x="150" y="100" width="100" height="250" class="cabinet-door-part" />
-                                <rect x="550" y="100" width="100" height="250" class="cabinet-door-part" />
+                                <rect x="150" y="100" width="500" height="250" class="headboard-part" />
+                                <rect x="150" y="100" width="100" height="250" class="headboard-part" />
+                                <rect x="550" y="100" width="100" height="250" class="headboard-part" />
                             </g>
                             <rect x="150" y="100" width="500" height="10" fill="#ffeaa7" opacity="0.6" filter="url(#glow)" />
 
                             <!-- Cama (Volume Frontal) -->
-                            <rect x="250" y="280" width="300" height="70" fill="#d0d0d0" rx="10" filter="url(#shadow)" />
+                            <rect id="bedroom-blanket" x="250" y="280" width="300" height="70" fill="#d0d0d0" rx="10" filter="url(#shadow)" />
                             <rect x="250" y="250" width="300" height="40" fill="#e8e8e8" rx="5" />
                             <rect x="270" y="230" width="120" height="40" fill="#fff" rx="5" filter="url(#shadow)"/>
                             <rect x="410" y="230" width="120" height="40" fill="#fff" rx="5" filter="url(#shadow)"/>
@@ -728,7 +728,7 @@
                             </g>
 
                             <!-- Secretária -->
-                            <g id="desk" fill="url(#marble-calacatta)" filter="url(#shadow)">
+                            <g id="office-countertop" fill="url(#marble-calacatta)" filter="url(#shadow)">
                                 <rect x="250" y="270" width="450" height="15" rx="2" stroke="#ccc" stroke-width="0.5"/>
                             </g>
                             <!-- Gavetas Secretária -->
@@ -838,6 +838,51 @@
                         
                         <div class="control-group">
                             <label class="control-label">Puxadores & Frisos</label>
+                            <div class="option-grid" data-target="handles">
+                                <button class="option-btn active" data-value="gold" style="--option-color: #d4af37">
+                                    <span>Ouro Escovado</span>
+                                </button>
+                                <button class="option-btn" data-value="black" style="--option-color: #404040">
+                                    <span>Preto Fosco</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Controles para a Sala de Estar -->
+                    <div id="controls-living-room" class="env-controls-group" style="display: none;">
+                        <div class="control-group">
+                            <label class="control-label">Marcenaria (Painel e Rack)</label>
+                            <div class="option-grid" data-target="cabinets">
+                                <button class="option-btn active" data-value="oak" style="--option-color: #cfb095">
+                                    <span>Carvalho Natural</span>
+                                </button>
+                                <button class="option-btn" data-value="walnut" style="--option-color: #4e3b31">
+                                    <span>Nogueira Escura</span>
+                                </button>
+                                <button class="option-btn" data-value="black" style="--option-color: #202020">
+                                    <span>Laca Preta Fosca</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Pedra (Tampo do Rack)</label>
+                            <div class="option-grid" data-target="countertop">
+                                <button class="option-btn active" data-value="calacatta" style="--option-color: #f0f0f2">
+                                    <span>Mármore Calacatta</span>
+                                </button>
+                                <button class="option-btn" data-value="nero" style="--option-color: #151517">
+                                    <span>Nero Marquina</span>
+                                </button>
+                                <button class="option-btn" data-value="quartz" style="--option-color: #eddcc5">
+                                    <span>Quartzo Gold</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label class="control-label">Puxadores do Rack</label>
                             <div class="option-grid" data-target="handles">
                                 <button class="option-btn active" data-value="gold" style="--option-color: #d4af37">
                                     <span>Ouro Escovado</span>
