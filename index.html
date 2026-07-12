@@ -87,8 +87,44 @@
     <header class="main-header">
         <div class="header-container">
             <a href="#" class="logo">
-                <span class="brand-title">CHEAR</span>
-                <span class="brand-subtitle">Móveis Planejados</span>
+                <div class="logo-icon">
+                    <svg viewBox="0 0 100 100" width="48" height="48" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <mask id="moon-mask">
+                                <rect width="100" height="100" fill="white" />
+                                <circle cx="42" cy="42" r="42" fill="black" />
+                            </mask>
+                            <polygon id="logo-star" points="0,-5 1.1,-1.5 5,-1.5 1.8,0.8 3,4.5 0,2.5 -3,4.5 -1.8,0.8 -5,-1.5 -1.1,-1.5" fill="#d4af37" />
+                        </defs>
+                        
+                        <!-- Crescent Moon -->
+                        <circle cx="50" cy="50" r="43" fill="#d4af37" mask="url(#moon-mask)" />
+                        
+                        <!-- Stars -->
+                        <g transform="translate(30, 20) scale(1.2)"><use href="#logo-star" /></g>
+                        <g transform="translate(20, 32) scale(0.9)"><use href="#logo-star" /></g>
+                        <g transform="translate(15, 45) scale(0.6)"><use href="#logo-star" /></g>
+                        <g transform="translate(42, 10) scale(0.7)"><use href="#logo-star" /></g>
+
+                        <!-- 3D Cabinet Silhouette -->
+                        <g transform="translate(38, 25)" fill="#ffffff" stroke="#ffffff" stroke-width="1" stroke-linejoin="round">
+                            <!-- Front Frame & Shelves with holes punched out -->
+                            <path d="M 0 5 L 18 5 L 18 45 L 0 45 Z M 2 7 L 2 20 L 16 20 L 16 7 Z M 2 22 L 2 35 L 16 35 L 16 22 Z" fill-rule="evenodd" />
+                            <!-- Drawer Handle (Subtract using black since bg is black) -->
+                            <!-- Wait, to make it truly transparent we could use mask or just path. Let's use a path for the handle too! -->
+                            <rect x="6" y="39" width="6" height="2" fill="#0d0d0d" stroke="none" />
+                            
+                            <!-- Side face -->
+                            <polygon points="18,5 28,0 28,40 18,45" fill="none" stroke-width="2" />
+                            <!-- Top face -->
+                            <polygon points="0,5 10,0 28,0 18,5" fill="none" stroke-width="2" />
+                        </g>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-title">CHEAR</span>
+                    <span class="brand-subtitle">Móveis Planejados</span>
+                </div>
             </a>
             
             <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menu">

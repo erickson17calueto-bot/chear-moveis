@@ -215,6 +215,13 @@ img {
 /* Logo */
 .logo {
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-text {
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
 }
@@ -224,7 +231,7 @@ img {
     font-size: 1.8rem;
     font-weight: 700;
     letter-spacing: 4px;
-    color: var(--color-gold-primary);
+    color: #ffffff; /* Brighter white for CHEAR as in the image */
     line-height: 1;
 }
 
