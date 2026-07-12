@@ -1,17 +1,19 @@
 /* ============================================================
    CHEAR INVESTMENT — Esfera 3D WebGL
-   Wireframe deformável com simplex noise, drag e scroll parallax
-   Sem dependências externas
+   Elemento fixo que viaja pelas secções ao scroll, com rasto
+   de luz dourada, hover-reactivo (sem clique) e drag opcional.
+   Sem dependências externas.
    ============================================================ */
 (function () {
     'use strict';
 
     var container = document.getElementById('sphere-container');
+    var glow      = document.getElementById('sphere-glow');
     var canvas    = document.getElementById('sphere-canvas');
     if (!container || !canvas) return;
 
     var gl = canvas.getContext('webgl', { antialias: true, alpha: true, premultipliedAlpha: false });
-    if (!gl) { container.style.display = 'none'; return; }
+    if (!gl) { container.style.display = 'none'; if (glow) glow.style.display = 'none'; return; }
 
     /* ================================================================
        SHADERS
@@ -121,8 +123,7 @@
     };
 
     /* ================================================================
-       GEOMETRIA — esfera UV wireframe
-       W=56 lon × H=36 lat  →  2109 verts, 8248 índices
+       GEOMETRIA — esfera UV wireframe (56 lon × 36 lat)
     ================================================================ */
     var W = 56, H = 36;
     var verts = [], idx = [];
@@ -138,18 +139,12 @@
             );
         }
     }
-    // Paralelos (anéis horizontais)
-    for (var j = 0; j <= H; j++) {
-        for (var i = 0; i < W; i++) {
+    for (var j = 0; j <= H; j++)
+        for (var i = 0; i < W; i++)
             idx.push(j * (W + 1) + i, j * (W + 1) + i + 1);
-        }
-    }
-    // Meridianos (linhas verticais)
-    for (var j = 0; j < H; j++) {
-        for (var i = 0; i <= W; i++) {
+    for (var j = 0; j < H; j++)
+        for (var i = 0; i <= W; i++)
             idx.push(j * (W + 1) + i, (j + 1) * (W + 1) + i);
-        }
-    }
 
     var vbuf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
@@ -159,10 +154,10 @@
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibuf);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(idx), gl.STATIC_DRAW);
 
-    var IC = idx.length; // 8248
+    var IC = idx.length;
 
     /* ================================================================
-       MATRIZES 4×4 (column-major, compatível WebGL)
+       MATRIZES 4×4 (column-major)
     ================================================================ */
     function mPersp(fov, asp, n, f) {
         var t = 1 / Math.tan(fov * 0.5), nf = 1 / (n - f);
@@ -173,7 +168,6 @@
             0,     0, 2 * f * n * nf, 0
         ]);
     }
-
     function mMul(a, b) {
         var o = new Float32Array(16);
         for (var c = 0; c < 4; c++)
@@ -184,36 +178,76 @@
             }
         return o;
     }
-
-    function mTrans(x, y, z) {
-        return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1]);
-    }
-
-    function mRX(a) {
-        var c = Math.cos(a), s = Math.sin(a);
-        return new Float32Array([1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]);
-    }
-
-    function mRY(a) {
-        var c = Math.cos(a), s = Math.sin(a);
-        return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]);
-    }
-
-    function mScale(s) {
-        return new Float32Array([s,0,0,0, 0,s,0,0, 0,0,s,0, 0,0,0,1]);
-    }
+    function mTrans(x, y, z) { return new Float32Array([1,0,0,0, 0,1,0,0, 0,0,1,0, x,y,z,1]); }
+    function mRX(a) { var c=Math.cos(a),s=Math.sin(a); return new Float32Array([1,0,0,0, 0,c,s,0, 0,-s,c,0, 0,0,0,1]); }
+    function mRY(a) { var c=Math.cos(a),s=Math.sin(a); return new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]); }
+    function mScale(s) { return new Float32Array([s,0,0,0, 0,s,0,0, 0,0,s,0, 0,0,0,1]); }
 
     function lerp(a, b, t) { return a + (b - a) * t; }
+    function smooth(t) { return t * t * (3 - 2 * t); }
+
+    /* ================================================================
+       WAYPOINTS — a esfera viaja de secção em secção, sempre nas
+       zonas escuras laterais (nunca sobre texto central)
+       xF: fração da largura do viewport (+ direita / − esquerda)
+       sF: escala | aF: opacidade do wireframe | gF: opacidade do rasto
+    ================================================================ */
+    /* hero: direita | grupo: canto inf-esq | empresas: canto sup-dir
+       faq: esquerda | stats: canto sup-dir | visão: esquerda
+       fundador: canto inf-dir | contacto: canto inf-esq */
+    var xF = [ 0.28, -0.38,  0.40, -0.42,  0.40, -0.40,  0.42, -0.40];
+    var yF = [-0.06,  0.20, -0.25,  0.05, -0.25,  0.00,  0.32,  0.30]; // fração da altura
+    var sF = [ 0.95,  0.45,  0.44,  0.40,  0.38,  0.46,  0.34,  0.36];
+    var aF = [ 0.80,  0.50,  0.46,  0.46,  0.42,  0.50,  0.44,  0.44];
+    var gF = [ 0.90,  0.60,  0.58,  0.55,  0.50,  0.62,  0.52,  0.52];
+
+    var sections = [];
+    var centers  = [];
+
+    function measure() {
+        sections = Array.prototype.slice.call(document.querySelectorAll('main > section'));
+        centers = sections.map(function (el) {
+            var top = 0, node = el;
+            while (node) { top += node.offsetTop; node = node.offsetParent; }
+            return top + el.offsetHeight / 2;
+        });
+    }
+    measure();
+    window.addEventListener('load', measure);
+
+    /* Posição fraccionária entre waypoints, guiada pelo centro do viewport */
+    function waypointPos() {
+        var n = Math.min(centers.length, xF.length);
+        if (n < 2) return 0;
+        var yc = window.scrollY + window.innerHeight * 0.5;
+        if (yc <= centers[0]) return 0;
+        if (yc >= centers[n - 1]) return n - 1;
+        for (var i = 0; i < n - 1; i++) {
+            if (yc < centers[i + 1]) {
+                var t = (yc - centers[i]) / (centers[i + 1] - centers[i]);
+                return i + smooth(Math.max(0, Math.min(1, t)));
+            }
+        }
+        return n - 1;
+    }
+
+    function wp(arr, p) {
+        var i = Math.floor(p), t = p - i;
+        var j = Math.min(i + 1, arr.length - 1);
+        return lerp(arr[i], arr[j], t);
+    }
 
     /* ================================================================
        ESTADO
     ================================================================ */
     var time = 0, lastTS = 0;
-    var rotX = 0.35, rotY = 0.0;
-    var tRotX = 0.35, tRotY = 0.0;
+    var rotX = 0.35, rotY = 0.0, tRotX = 0.35, tRotY = 0.0;
+    var posX = 0, posY = 0;           // posição suavizada (px, offset do centro)
+    var glowX = 0, glowY = 0;         // rasto de luz — segue com atraso
     var dragX = 0, dragY = 0, tDragX = 0, tDragY = 0;
+    var curAlpha = 0.78, curScale = 1, curGlow = 0.85;
     var isDrag = false, lx = 0, ly = 0;
-    var scrollT = 0;          // scroll progress 0→1 within hero
+    var hovering = false;
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     /* ================================================================
@@ -224,82 +258,99 @@
         canvas.width  = (canvas.offsetWidth  || 1) * dpr;
         canvas.height = (canvas.offsetHeight || 1) * dpr;
         gl.viewport(0, 0, canvas.width, canvas.height);
+        measure();
     }
     window.addEventListener('resize', resize, { passive: true });
     resize();
 
     /* ================================================================
-       INTERACTIVIDADE — drag por eventos globais (pointer-events: none no canvas)
-       Detecta se o click está dentro do container
+       INTERACTIVIDADE
+       — Hover: basta passar o cursor sobre a esfera (sem clicar)
+       — Drag: clicar e arrastar desloca-a, com retorno suave
     ================================================================ */
-    function ptInContainer(cx, cy) {
+    function inSphere(cx, cy) {
         var r = container.getBoundingClientRect();
-        return cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom;
+        // círculo inscrito, ligeiramente maior para hover generoso
+        var rx = r.left + r.width / 2, ry = r.top + r.height / 2;
+        var rad = Math.max(r.width, r.height) * 0.5;
+        var dx = cx - rx, dy = cy - ry;
+        return (dx * dx + dy * dy) <= rad * rad * 1.1;
     }
 
-    function startDrag(cx, cy) {
-        isDrag = true; lx = cx; ly = cy;
-        container.style.cursor = 'grabbing';
-        document.body.style.userSelect = 'none';
-    }
+    window.addEventListener('mousemove', function (e) {
+        var inside = inSphere(e.clientX, e.clientY);
+
+        if (isDrag) {
+            var dx = e.clientX - lx, dy = e.clientY - ly;
+            tRotY += dx * 0.008;
+            tRotX  = Math.max(-1.4, Math.min(1.4, tRotX + dy * 0.008));
+            tDragX = Math.max(-90, Math.min(90, tDragX + dx * 0.40));
+            tDragY = Math.max(-70, Math.min(70, tDragY + dy * 0.40));
+            lx = e.clientX; ly = e.clientY;
+            return;
+        }
+
+        if (inside) {
+            if (hovering) {
+                // hover em movimento → a esfera roda a seguir o cursor
+                var hdx = e.clientX - lx, hdy = e.clientY - ly;
+                tRotY += hdx * 0.005;
+                tRotX  = Math.max(-1.4, Math.min(1.4, tRotX + hdy * 0.005));
+                // deriva subtil na direcção do cursor
+                var r = container.getBoundingClientRect();
+                var nx = (e.clientX - (r.left + r.width / 2)) / (r.width / 2);
+                var ny = (e.clientY - (r.top + r.height / 2)) / (r.height / 2);
+                tDragX = nx * 26;
+                tDragY = ny * 20;
+            }
+            hovering = true;
+            lx = e.clientX; ly = e.clientY;
+        } else if (hovering) {
+            hovering = false;
+            tDragX = 0; tDragY = 0; // regressa suavemente
+        }
+    });
 
     window.addEventListener('mousedown', function (e) {
-        if (e.target.closest('a,button')) return;
-        if (ptInContainer(e.clientX, e.clientY)) {
-            startDrag(e.clientX, e.clientY);
+        if (e.target.closest('a,button,input,textarea')) return;
+        if (inSphere(e.clientX, e.clientY)) {
+            isDrag = true; lx = e.clientX; ly = e.clientY;
+            document.body.style.cursor = 'grabbing';
+            document.body.style.userSelect = 'none';
             e.preventDefault();
         }
     });
 
-    window.addEventListener('touchstart', function (e) {
-        var t = e.touches[0];
-        if (ptInContainer(t.clientX, t.clientY)) {
-            startDrag(t.clientX, t.clientY);
-        }
-    }, { passive: true });
-
-    function moveDrag(cx, cy) {
-        if (!isDrag) return;
-        var dx = cx - lx, dy = cy - ly;
-        tRotY += dx * 0.008;
-        tRotX += dy * 0.008;
-        tRotX = Math.max(-1.4, Math.min(1.4, tRotX));
-        tDragX = Math.max(-90, Math.min(90, tDragX + dx * 0.40));
-        tDragY = Math.max(-70, Math.min(70, tDragY + dy * 0.40));
-        lx = cx; ly = cy;
-    }
-
-    window.addEventListener('mousemove', function (e) { moveDrag(e.clientX, e.clientY); });
-    window.addEventListener('touchmove', function (e) {
-        moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: true });
-
     function endDrag() {
         if (!isDrag) return;
         isDrag = false;
-        container.style.cursor = 'grab';
+        document.body.style.cursor = '';
         document.body.style.userSelect = '';
-        tDragX = 0; tDragY = 0; // spring-back
+        tDragX = 0; tDragY = 0;
     }
     window.addEventListener('mouseup', endDrag);
-    window.addEventListener('touchend', endDrag);
 
-    /* ================================================================
-       SCROLL PARALLAX
-    ================================================================ */
-    window.addEventListener('scroll', function () {
-        var hero = document.getElementById('inicio');
-        if (!hero) return;
-        scrollT = Math.min(Math.max(window.scrollY / (hero.offsetHeight || window.innerHeight), 0), 1);
+    window.addEventListener('touchstart', function (e) {
+        var t = e.touches[0];
+        if (inSphere(t.clientX, t.clientY)) { isDrag = true; lx = t.clientX; ly = t.clientY; }
     }, { passive: true });
+    window.addEventListener('touchmove', function (e) {
+        if (!isDrag) return;
+        var t = e.touches[0];
+        var dx = t.clientX - lx, dy = t.clientY - ly;
+        tRotY += dx * 0.008;
+        tRotX  = Math.max(-1.4, Math.min(1.4, tRotX + dy * 0.008));
+        tDragX = Math.max(-90, Math.min(90, tDragX + dx * 0.40));
+        tDragY = Math.max(-70, Math.min(70, tDragY + dy * 0.40));
+        lx = t.clientX; ly = t.clientY;
+    }, { passive: true });
+    window.addEventListener('touchend', endDrag);
 
     /* ================================================================
        LOOP DE RENDER
     ================================================================ */
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
-    container.style.cursor = 'grab';
 
     function render(ts) {
         requestAnimationFrame(render);
@@ -308,18 +359,43 @@
         lastTS = ts;
         time += dt;
 
-        /* Smooth state */
+        /* Alvos de posição a partir dos waypoints da secção actual */
+        var p = waypointPos();
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var tX = wp(xF, p) * vw;
+        var tY = wp(yF, p) * vh;
+        var tS = wp(sF, p);
+        var tA = wp(aF, p);
+        var tG = wp(gF, p);
+
+        var easeP = reduced ? 1 : 0.055;
         var easeR = reduced ? 1 : 0.09;
         var easeD = reduced ? 1 : 0.07;
-        if (!isDrag && !reduced) tRotY += 0.0022; // auto-spin
+
+        if (!isDrag && !reduced) tRotY += 0.0022; // movimento contínuo, sem interacção
+
+        posX  = lerp(posX,  tX, easeP);
+        posY  = lerp(posY,  tY, easeP);
         rotX  = lerp(rotX,  tRotX,  easeR);
         rotY  = lerp(rotY,  tRotY,  easeR);
         dragX = lerp(dragX, tDragX, easeD);
         dragY = lerp(dragY, tDragY, easeD);
+        curScale = lerp(curScale, tS, easeP);
+        curAlpha = lerp(curAlpha, tA, easeP);
+        curGlow  = lerp(curGlow,  tG, easeP);
 
-        /* Container CSS transform: centrar + offset de drag */
+        /* Rasto de luz — segue a esfera com atraso maior (deixa luz para trás) */
+        glowX = lerp(glowX, posX + dragX, reduced ? 1 : 0.022);
+        glowY = lerp(glowY, posY + dragY, reduced ? 1 : 0.022);
+
         container.style.transform =
-            'translateY(-52%) translate(' + dragX.toFixed(1) + 'px,' + dragY.toFixed(1) + 'px)';
+            'translate3d(' + (posX + dragX).toFixed(1) + 'px,' + (posY + dragY).toFixed(1) + 'px,0)';
+
+        if (glow) {
+            glow.style.transform =
+                'translate3d(' + glowX.toFixed(1) + 'px,' + glowY.toFixed(1) + 'px,0) scale(' + (curScale * 1.15).toFixed(3) + ')';
+            glow.style.opacity = curGlow.toFixed(3);
+        }
 
         /* Canvas size check */
         var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -331,17 +407,14 @@
         }
         var asp = canvas.width / Math.max(canvas.height, 1);
 
-        /* Scroll-driven: escala e posição Y */
-        var sc = 1.0 - scrollT * 0.18;
-        var ty = scrollT * 0.45;
+        /* Flutuação vertical subtil */
+        var bob = reduced ? 0 : Math.sin(time * 0.6) * 0.06;
 
-        /* Matrizes */
         var proj = mPersp(1.05, asp, 0.1, 100);
-        var mv   = mMul(mTrans(0, ty, -3.3),
-                   mMul(mScale(sc),
+        var mv   = mMul(mTrans(0, bob, -3.3),
+                   mMul(mScale(curScale),
                    mMul(mRY(rotY), mRX(rotX))));
 
-        /* Render */
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -352,7 +425,7 @@
         gl.uniform1f(loc.uStr,   0.22);
         gl.uniform1f(loc.uDen,   1.85);
         gl.uniform3f(loc.uCol,   0.988, 0.639, 0.067); /* #FCA311 */
-        gl.uniform1f(loc.uAlpha, 0.78);
+        gl.uniform1f(loc.uAlpha, curAlpha);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
         gl.enableVertexAttribArray(loc.aPos);

@@ -304,10 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Abas do simulador
     const tabButtons = document.querySelectorAll('.sim-tab-btn');
     const svgKitchen = document.getElementById('kitchen-svg');
+    const svgCloset = document.getElementById('closet-svg');
     const svgBedroom = document.getElementById('bedroom-svg');
     const svgOffice = document.getElementById('office-svg');
 
-    let activeEnv = 'kitchen'; // kitchen, bedroom, office
+    let activeEnv = 'kitchen'; // kitchen, closet, bedroom, office
 
     // Estado da simulação por ambiente
     const simState = {
@@ -315,6 +316,10 @@ document.addEventListener('DOMContentLoaded', () => {
             cabinets: 'oak',      // oak, walnut, black
             countertop: 'calacatta', // calacatta, nero, quartz
             handles: 'gold'       // gold, black
+        },
+        closet: {
+            cabinets: 'oak',
+            handles: 'gold'
         },
         bedroom: {
             cabinets: 'oak',      // oak, walnut, black
@@ -355,6 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const environmentNames = {
         kitchen: 'Cozinha Gourmet',
+        closet: 'Closet Premium',
         bedroom: 'Dormitório Casal',
         office: 'Home Office'
     };
@@ -371,11 +377,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Ocultar todos os SVGs
             if (svgKitchen) svgKitchen.style.display = 'none';
+            if (svgCloset) svgCloset.style.display = 'none';
             if (svgBedroom) svgBedroom.style.display = 'none';
             if (svgOffice) svgOffice.style.display = 'none';
             
             // Mostrar SVG correspondente
             if (env === 'kitchen' && svgKitchen) svgKitchen.style.display = 'block';
+            if (env === 'closet' && svgCloset) svgCloset.style.display = 'block';
             if (env === 'bedroom' && svgBedroom) svgBedroom.style.display = 'block';
             if (env === 'office' && svgOffice) svgOffice.style.display = 'block';
 

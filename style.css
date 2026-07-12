@@ -3603,3 +3603,14 @@ html, body {
     }
 
 }
+
+/* --- 3D Simulator Enhancements --- */
+.glass-door {
+    backdrop-filter: blur(4px) brightness(1.1);
+    -webkit-backdrop-filter: blur(4px) brightness(1.1);
+    transition: all 0.3s ease;
+}
+
+.customizer-svg {
+    filter: drop-shadow(0px 10px 20px rgba(0,0,0,0.15));
+}
